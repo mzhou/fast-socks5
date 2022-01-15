@@ -160,6 +160,10 @@ impl<'a> Stream for Incoming<'a> {
                     &peer_addr, &local_addr
                 );
 
+                debug!("incoming nodelay is {:?}", socket.nodelay());
+                let _ = socket.set_nodelay(true);
+                debug!("incoming nodelay is {:?}", socket.nodelay());
+
                 // Wrap the TcpStream into Socks5Socket
                 let socket = Socks5Socket::new(socket, self.0.config.clone());
 
@@ -528,6 +532,10 @@ impl<T: AsyncRead + AsyncWrite + Unpin> Socks5Socket<T> {
         };
 
         debug!("Connected to remote destination");
+
+        debug!("outbound nodelay is {:?}", outbound.nodelay());
+        let _ = outbound.set_nodelay(true);
+        debug!("outbound nodelay is {:?}", outbound.nodelay());
 
         // TODO: convert this to the real address
         self.inner
